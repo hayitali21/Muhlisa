@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Muhlisa uchun gullar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Sizga kichkina sovg‘a bor">
+<meta property="og:title" content="Muhlisa uchun 🌹">
+<meta property="og:description" content="Sizga kichkina sovg‘a bor">
+<meta name="theme-color" content="#14080e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Caveat:wght@500;600&display=swap">
+<style>
+/* Layout: one-screen stage; scenes are stacked fixed layers that cross-fade. Single dark "night garden" look by choice. */
+:root{
+  --night:#14080e; --plum:#2b0f1f; --wine:#6a1f3c;
+  --blush:#f5c6d2; --cream:#fbf1e6; --gold:#e9c690; --ink:#3e1624; --muted:#c9a3ae;
+  --display:"Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --hand:"Caveat", "Segoe Print", "Bradley Hand", cursive;
+  color-scheme: dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--night);color:var(--cream);font-family:var(--display);overflow:hidden;
+  -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.bg{position:fixed;inset:0;z-index:0;background:radial-gradient(130% 75% at 50% 110%, var(--wine) 0%, var(--plum) 48%, var(--night) 100%)}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+
+.scene{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-sizing:border-box;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(env(safe-area-inset-top,0px) + 16px) calc(env(safe-area-inset-bottom,0px) + 16px);
+  opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s linear .9s}
+.scene.on{opacity:1;visibility:visible;transition:opacity .9s ease,visibility 0s}
+
+/* start */
+#start{cursor:pointer;gap:.2rem}
+.sun{width:56px;height:56px;border-radius:50%;margin-bottom:1.4rem;
+  background:radial-gradient(circle at 40% 38%,#fff0c8,#eab56c 70%);box-shadow:0 0 50px 14px rgba(234,181,108,.28);animation:glow 4s ease-in-out infinite}
+.sun.moon{animation:none;background:transparent;box-shadow:inset 13px -5px 0 0 #f2deb4,0 0 40px 2px rgba(242,222,180,.12)}
+.greet{margin:0;font-style:italic;font-weight:500;font-size:clamp(1.6rem,7.5vw,2.3rem);color:var(--blush)}
+.name{margin:0;font-weight:600;font-size:clamp(3.6rem,19vw,6rem);line-height:1;letter-spacing:.01em;
+  background:linear-gradient(100deg,var(--gold),#ffe9cf 45%,var(--blush));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin:.9rem 0 0;font-size:1.3rem;color:var(--muted)}
+.tap{margin-top:2.6rem;border:1px solid rgba(233,198,144,.45);background:rgba(255,255,255,.04);color:var(--gold);
+  padding:.75rem 1.6rem;border-radius:999px;font:600 1.05rem var(--display);letter-spacing:.08em;cursor:pointer;animation:breathe 2.4s ease-in-out infinite}
+
+/* intro */
+.typed{margin:0;max-width:17ch;font-weight:500;font-size:clamp(1.75rem,7.6vw,2.5rem);line-height:1.35;text-wrap:balance;transition:opacity .55s ease,transform .55s ease}
+.typed.fade{opacity:0;transform:translateY(-10px)}
+.caret{display:inline-block;width:2px;height:1em;margin-left:3px;vertical-align:-.12em;background:var(--gold);animation:blink 1s steps(1) infinite}
+
+/* stage */
+#stage{justify-content:center;gap:.4rem}
+#bq{width:min(96vw,470px);height:auto;max-height:74vh;overflow:visible;transition:transform 1.5s cubic-bezier(.4,0,.2,1);transform-origin:50% 0}
+#stage.finale #bq{transform:translateY(-4vh) scale(.72)}
+.hint{margin:0;min-height:3.2em;font-style:italic;font-size:1.35rem;color:var(--gold);transition:opacity .6s ease}
+.hint small{display:block;font-style:normal;font-size:.95rem;letter-spacing:.12em;color:var(--muted);margin-top:.15rem}
+#stage.finale .hint{opacity:0}
+.layer,.leafS,.pop,.rib{transform-box:view-box;transform-origin:0 0}
+.layer,.leafS{transform:scale(0)}
+.layer{opacity:0}
+.rib{opacity:0;transform:scale(.2)}
+.bd{opacity:0}
+.tw{animation:twinkle 3s ease-in-out infinite}
+.hit{cursor:pointer;pointer-events:all;outline:none}
+.ring{opacity:0;transform-box:view-box;transform-origin:0 0}
+.interactive .fl:not(.opened) .ring{animation:ring 2.4s ease-out infinite}
+.glow{opacity:0;transition:opacity 1s ease}
+.fl.opened .glow{opacity:.6}
+.allOpen .fl .glow{animation:pulse 2.6s ease-in-out infinite}
+.spark{opacity:0;transition:opacity .6s ease .2s}
+.fl.opened .spark{opacity:1}
+
+/* message card */
+.cardWrap{position:fixed;inset:0;z-index:10;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,4,8,.4);
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:0 calc(env(safe-area-inset-bottom,0px) + 14px);
+  opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s}
+.cardWrap.on{opacity:1;visibility:visible;transition:opacity .45s ease,visibility 0s}
+.card{width:100%;max-width:440px;box-sizing:border-box;background:linear-gradient(170deg,var(--cream),#f4dfd2);color:var(--ink);border-radius:22px;
+  padding:1.4rem 1.4rem 1.2rem;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45);transform:translateY(40px) scale(.97);transition:transform .55s cubic-bezier(.2,1.2,.3,1)}
+.cardWrap.on .card{transform:none}
+.cardTag{margin:0;font-size:.85rem;letter-spacing:.16em;text-transform:uppercase;color:#9a4a5e;font-weight:600}
+.cardText{margin:.7rem 0 1.2rem;font-size:1.55rem;line-height:1.32;font-weight:500;text-wrap:pretty}
+.btn{border:0;background:var(--ink);color:var(--cream);padding:.8rem 1.6rem;border-radius:999px;font:600 1.08rem var(--display);letter-spacing:.04em;cursor:pointer}
+.btn:focus-visible,.tap:focus-visible,.env:focus-visible,.mini:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* envelope */
+.envBox{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 7vh);z-index:5;display:flex;flex-direction:column;align-items:center;gap:.9rem;
+  opacity:0;visibility:hidden;transform:translateY(30px);transition:opacity .9s ease,transform .9s ease,visibility 0s linear .9s;perspective:700px}
+.envBox.on{opacity:1;visibility:visible;transform:none;transition:opacity .9s ease,transform .9s ease,visibility 0s}
+.env{position:relative;width:220px;height:142px;cursor:pointer;animation:float 3.2s ease-in-out infinite;outline:none}
+.env>div{position:absolute}
+.envBack{inset:0;background:#d99d95;border-radius:8px;box-shadow:0 18px 40px rgba(0,0,0,.4)}
+.envPaper{left:12px;right:12px;top:10px;height:122px;background:var(--cream);border-radius:5px;z-index:2;display:flex;align-items:flex-start;justify-content:center;
+  padding-top:14px;box-sizing:border-box;font:600 1.35rem var(--hand);color:var(--ink);transition:transform .9s cubic-bezier(.3,.8,.3,1) .45s}
+.envFront{inset:0;z-index:3;border-radius:8px;background:linear-gradient(175deg,#f2cdc3,#e6aea4);clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%)}
+.envFlap{left:0;right:0;top:0;height:60%;z-index:4;background:linear-gradient(180deg,#e7b1a7,#d4948a);clip-path:polygon(0 0,100% 0,50% 100%);
+  transform-origin:50% 0;transition:transform .7s ease,z-index 0s linear .35s}
+.seal{left:calc(50% - 17px);top:calc(60% - 20px);width:34px;height:34px;border-radius:50%;z-index:5;background:radial-gradient(circle at 40% 35%,#c82a40,#8a1124);
+  color:#f7d3c0;display:grid;place-items:center;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:opacity .3s ease}
+.env.open{animation:none}
+.env.open .envFlap{transform:rotateX(180deg);z-index:1}
+.env.open .seal{opacity:0}
+.env.open .envPaper{transform:translateY(-78px)}
+.envHint{margin:0;font-style:italic;font-size:1.3rem;color:var(--gold)}
+
+/* letter */
+.letterWrap{position:fixed;inset:0;z-index:20;overflow-y:auto;display:flex;align-items:center;justify-content:center;background:rgba(10,4,8,.6);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);box-sizing:border-box;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(env(safe-area-inset-top,0px) + 24px) calc(env(safe-area-inset-bottom,0px) + 24px);
+  opacity:0;visibility:hidden;transition:opacity .8s ease,visibility 0s linear .8s;-webkit-user-select:text;user-select:text}
+.letterWrap.on{opacity:1;visibility:visible;transition:opacity .8s ease,visibility 0s}
+.letter{margin:auto;width:100%;max-width:440px;box-sizing:border-box;color:var(--ink);font-family:var(--hand);font-size:1.6rem;line-height:1.4;
+  padding:2rem 1.6rem 1.6rem;border-radius:6px;transform:rotate(-.6deg) translateY(24px);transition:transform 1s cubic-bezier(.2,1,.3,1);
+  background:repeating-linear-gradient(180deg,transparent 0 2.2rem,rgba(158,92,110,.13) 2.2rem calc(2.2rem + 1px)),linear-gradient(170deg,#fdf6ee,#f5e6da);
+  box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.letterWrap.on .letter{transform:rotate(-.6deg)}
+.letter p{margin:0 0 .9rem;opacity:0;transform:translateY(8px);transition:opacity .9s ease,transform .9s ease}
+.letter p.show{opacity:1;transform:none}
+.lHead{font-size:2rem;font-weight:600;color:#8a1124}
+.lSign{text-align:right;color:#8a1124;margin-top:1.4rem!important}
+.lBtns{display:flex;justify-content:center;margin-top:1.2rem}
+
+/* small controls */
+.mini{position:fixed;z-index:30;border:1px solid rgba(233,198,144,.35);background:rgba(20,8,14,.55);color:var(--gold);cursor:pointer;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+#mute{top:calc(env(safe-area-inset-top,0px) + 12px);right:calc(env(safe-area-inset-right,0px) + 12px);width:42px;height:42px;border-radius:50%;display:grid;place-items:center;padding:0}
+#mute svg{width:20px;height:20px}
+#reopen{left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 22px);border-radius:999px;padding:.65rem 1.3rem;font:600 1.05rem var(--display);z-index:6}
+
+@keyframes breathe{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+@keyframes glow{0%,100%{box-shadow:0 0 44px 10px rgba(234,181,108,.22)}50%{box-shadow:0 0 64px 18px rgba(234,181,108,.34)}}
+@keyframes blink{50%{opacity:0}}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes ring{0%{opacity:.75;transform:scale(.85)}100%{opacity:0;transform:scale(1.35)}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:.7}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media (prefers-reduced-motion: reduce){.tap,.sun,.env,.tw{animation:none}}
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true"></div>
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<button id="mute" class="mini" aria-label="Musiqani o‘chirish" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/><path id="muteSlash" d="M3 3l18 18" opacity="0"/></svg>
+</button>
+
+<section id="start" class="scene on" aria-label="Boshlash">
+  <div class="sun" aria-hidden="true"></div>
+  <p class="greet" id="greet">Xayrli tong,</p>
+  <h1 class="name">Muhlisa</h1>
+  <p class="sub">Sizga kichkina sovg‘a bor</p>
+  <button class="tap" id="startBtn">Ekranga teging</button>
+</section>
+
+<section id="intro" class="scene" aria-live="polite">
+  <p class="typed" id="typed"></p>
+</section>
+
+<section id="stage" class="scene">
+  <svg id="bq" viewBox="20 92 370 470" role="img" aria-label="Qizil atirgul va pionlardan buket"></svg>
+  <p class="hint" id="hint"></p>
+</section>
+
+<div class="envBox" id="envBox">
+  <div class="env" id="env" role="button" tabindex="0" aria-label="Xatni ochish">
+    <div class="envBack"></div>
+    <div class="envPaper">Muhlisa uchun</div>
+    <div class="envFront"></div>
+    <div class="envFlap"></div>
+    <div class="seal" aria-hidden="true">♥</div>
+  </div>
+  <p class="envHint">Sizga xat bor. Oching</p>
+</div>
+
+<button id="reopen" class="mini" hidden>✉️ Xatni qayta o‘qish</button>
+
+<div class="cardWrap" id="cardWrap">
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="cardText">
+    <p class="cardTag" id="cardTag"></p>
+    <p class="cardText" id="cardText"></p>
+    <button class="btn" id="cardBtn">Davom etish</button>
+  </div>
+</div>
+
+<div class="letterWrap" id="letter">
+  <article class="letter">
+    <p class="lHead">Muhlisa,</p>
+    <p>Atrofingizdagilar sizni doim kulib turgan holda ko‘rishga o‘rganib qolgan.</p>
+    <p>Lekin siz ham kimningdir sizni xursand qilishga urinishiga loyiqsiz.</p>
+    <p>Bugun shoshilmang. Bir piyola choy iching, yoqtirgan qo‘shig‘ingizni qo‘ying, o‘zingizga ozgina vaqt ajrating.</p>
+    <p>Kulgingiz bugun ham bo‘lsin, faqat majburiy emas, chin dildan. 🌹</p>
+    <p class="lSign">Sizni qadrlaydigan inson</p>
+    <div class="lBtns"><button class="btn" id="backBtn">Gullarga qaytish</button></div>
+  </article>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ---------- matnlar ---------- */
+const INTRO = [
+  'Bilaman, so‘nggi paytlarda biroz charchadingiz.',
+  'Shuning uchun bugun sizga gul olib keldim...',
+  'Faqat bu gullar boshqacha: ular hech qachon so‘limaydi. 🌹'
+];
+const MSGS = [
+  'Siz kirib kelgan joyda kayfiyat o‘zgaradi. Bu hammaga ham berilmagan.',
+  'Bir necha daqiqada har qanday odam bilan til topishib ketasiz. Men hali ham bunga hayronman 😄',
+  'Qanday qiyin vaziyat bo‘lmasin, siz undan chiqish yo‘lini topasiz. Buni ko‘p marta ko‘rganman.',
+  'Xafa bo‘lsangiz ham bildirmay kulib yurishingizni sezaman. Bu katta kuch. Lekin har doim kuchli bo‘lish shart emas.',
+  'Charchoq dangasalik emas, ko‘p harakat qilganingizning belgisi. Bugun o‘zingizga sal mehribonroq bo‘ling.',
+  'Va ha, siz juda chiroylisiz. Buni ham eslatib qo‘yish kerak edi 🙂'
+];
+
+/* ---------- vaqtga qarab salom ---------- */
+const hr = new Date().getHours();
+let greet = 'Xayrli tong,', night = false;
+if (hr >= 11 && hr < 17) greet = 'Xayrli kun,';
+else if (hr >= 17 && hr < 22) { greet = 'Xayrli kech,'; night = true; }
+else if (hr >= 22 || hr < 5) { greet = 'Xayrli tun,'; night = true; }
+$('#greet').textContent = greet;
+if (night) $('.sun').classList.add('moon');
+
+/* ---------- seeded random ---------- */
+let seed = 7;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+/* ---------- osmon: zarrachalar va gulbarglar ---------- */
+const cv = $('#sky'), cx = cv.getContext('2d');
+let W = 0, H = 0;
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+resize(); addEventListener('resize', resize);
+
+const motes = Array.from({length: 34}, () => ({
+  x: Math.random(), y: Math.random(), r: .6 + Math.random() * 1.8,
+  vy: .00004 + Math.random() * .00009, ph: Math.random() * 6.28, sp: .5 + Math.random()
+}));
+const petals = [];
+const PCOL = ['#b3132a', '#cf2238', '#8e0d20', '#f29fb6', '#f7b8c9', '#e98aa4'];
+let petalRate = 0;
+function addPetal(x, y, burst) {
+  if (petals.length > 70) return;
+  const a = Math.random() * Math.PI * 2, sp = burst ? 1.5 + Math.random() * 2.5 : 0;
+  petals.push({
+    x: x ?? Math.random() * W, y: y ?? -20,
+    vx: burst ? Math.cos(a) * sp : (Math.random() - .5) * .4,
+    vy: burst ? Math.sin(a) * sp - 1.5 : .5 + Math.random() * .7,
+    rot: Math.random() * 6.28, vr: (Math.random() - .5) * .05,
+    s: 5 + Math.random() * 6, c: PCOL[(Math.random() * PCOL.length) | 0],
+    ph: Math.random() * 6.28, life: burst ? 1 : 2
+  });
+}
+
+/* ---------- buket ---------- */
+const svg = $('#bq');
+function el(tag, attrs, parent) {
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+const defs = el('defs', {}, svg);
+function radial(id, r, stops) {
+  const g = el('radialGradient', {id, gradientUnits: 'userSpaceOnUse', cx: 0, cy: 0, r}, defs);
+  stops.forEach(([o, c, a]) => el('stop', {offset: o, 'stop-color': c, 'stop-opacity': a ?? 1}, g));
+}
+radial('r1', 40, [[0, '#4f0410'], [.55, '#8e0d20'], [1, '#c8203a']]);
+radial('r2', 31, [[0, '#5c0614'], [1, '#d12a40']]);
+radial('r3', 22, [[0, '#6a0816'], [1, '#e03a50']]);
+radial('p1', 46, [[0, '#b84a6d'], [1, '#f4a3ba']]);
+radial('p2', 37, [[0, '#cc6487'], [1, '#f8b7c9']]);
+radial('p3', 27, [[0, '#dc7d9b'], [1, '#fbc8d6']]);
+radial('p4', 17, [[0, '#e690aa'], [1, '#fde0e8']]);
+radial('shadowG', 50, [[0, '#000', .5], [.7, '#000', .2], [1, '#000', 0]]);
+radial('glowG', 70, [[0, '#ffd9a8', .9], [.5, '#ffb48a', .35], [1, '#ff9a8a', 0]]);
+const lg = el('linearGradient', {id: 'leafG', x1: 0, y1: 0, x2: 1, y2: 0}, defs);
+el('stop', {offset: 0, 'stop-color': '#24562d'}, lg); el('stop', {offset: 1, 'stop-color': '#5aa35f'}, lg);
+const rg = el('linearGradient', {id: 'ribG', x1: 0, y1: 0, x2: 0, y2: 1}, defs);
+el('stop', {offset: 0, 'stop-color': '#f6dcc0'}, rg); el('stop', {offset: 1, 'stop-color': '#d9ae84'}, rg);
+
+const PX = 205, PY = 412; // dasta bog'langan nuqta: buket shu yerdan tebranadi
+const root = el('g', {transform: `translate(${PX} ${PY})`}, svg);
+const tiltG = el('g', {}, root);
+const scene = el('g', {transform: `translate(${-PX} ${-PY})`}, tiltG);
+const gLeavesBack = el('g', {}, scene);
+const gStems = el('g', {}, scene);
+const gBreath = el('g', {}, scene);
+const gFlowers = el('g', {}, scene);
+const gRibbon = el('g', {transform: `translate(${PX} ${PY - 4})`}, scene);
+const gHits = el('g', {}, scene);
+
+const FL = [
+  {t: 'peony', x: 122, y: 192, s: 1},
+  {t: 'rose',  x: 205, y: 160, s: 1},
+  {t: 'peony', x: 288, y: 192, s: 1},
+  {t: 'rose',  x: 138, y: 270, s: .95},
+  {t: 'peony', x: 207, y: 250, s: 1},
+  {t: 'rose',  x: 274, y: 272, s: .95}
+];
+
+const petalD = (L, w) => `M0 0C${-w} ${-L * .25} ${-w * 1.05} ${-L * .85} 0 ${-L}C${w * 1.05} ${-L * .85} ${w} ${-L * .25} 0 0Z`;
+const leafD = L => `M0 0Q${L * .4} ${-L * .32} ${L} 0Q${L * .4} ${L * .32} 0 0Z`;
+
+function addLeaf(parent, x, y, ang, L) {
+  const g = el('g', {transform: `translate(${x} ${y}) rotate(${ang})`}, parent);
+  const s = el('g', {class: 'leafS'}, g);
+  el('path', {d: leafD(L), fill: 'url(#leafG)'}, s);
+  el('path', {d: `M2 0Q${L * .5} ${-L * .04} ${L * .9} 0`, stroke: 'rgba(200,240,190,.35)', 'stroke-width': 1, fill: 'none'}, s);
+  return s;
+}
+const leaves = [];
+[[112, 232, 192, 72], [298, 232, -12, 72], [150, 152, 232, 60], [260, 152, -52, 60],
+ [124, 302, 158, 64], [286, 304, 22, 64], [172, 330, 128, 52], [238, 332, 52, 52]]
+  .forEach(([x, y, a, L]) => leaves.push(addLeaf(gLeavesBack, x, y, a, L)));
+
+// poyalar
+const stems = FL.map((f, i) => {
+  const bx = 192 + i * 5, tx = 200 + i * 2;
+  const d = `M${bx} 545C${bx} 492 ${tx} 448 ${tx} ${PY}C${tx} 362 ${f.x} ${f.y + 115} ${f.x} ${f.y + 10}`;
+  const p = el('path', {d, stroke: '#3f7d43', 'stroke-width': 3.2, fill: 'none', 'stroke-linecap': 'round'}, gStems);
+  const len = p.getTotalLength();
+  p.style.strokeDasharray = len; p.style.strokeDashoffset = len; p._len = len;
+  return p;
+});
+// poyadagi kichik barglar
+[[0, .78, -1], [2, .76, 1], [3, .7, -1], [5, .7, 1]].forEach(([i, fr, side]) => {
+  const p = stems[i], L = p._len * fr;
+  const a = p.getPointAtLength(L), b = p.getPointAtLength(L + 2);
+  const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + side * 55;
+  leaves.push(addLeaf(gStems, a.x, a.y, ang, 34));
+});
+
+// mayda oq gullar (gipsofila)
+const breath = [];
+for (let k = 0; k < 48; k++) {
+  const a = rnd() * Math.PI * 2, d = .62 + rnd() * .45;
+  const x = 205 + Math.cos(a) * 158 * d, y = 222 + Math.sin(a) * 118 * d;
+  if (y > 330) continue;
+  const g = el('g', {class: 'bd'}, gBreath);
+  el('circle', {cx: x, cy: y, r: 1.8 + rnd() * 1.8, fill: '#fff4ec', class: rnd() < .4 ? 'tw' : '', style: `animation-delay:${-rnd() * 3}s`}, g);
+  breath.push(g);
+}
+
+function star(parent, x, y, s, delay) {
+  return el('path', {d: `M0 ${-s}Q1 -1 ${s} 0Q1 1 0 ${s}Q-1 1 ${-s} 0Q-1 -1 0 ${-s}Z`, transform: `translate(${x} ${y})`, fill: '#ffe2a8', class: 'tw', style: `animation-delay:${delay}s`}, parent);
+}
+// pion uchun to'lqinsimon chetli gulbarg, atirgul markazi uchun "kosacha"
+const ruffleD = (L, w) => `M0 0C${-w} ${-L * .25} ${-w * 1.08} ${-L * .68} ${-w * .62} ${-L * .9}Q${-w * .42} ${-L * 1.04} ${-w * .18} ${-L * .94}Q0 ${-L * 1.07} ${w * .18} ${-L * .94}Q${w * .42} ${-L * 1.04} ${w * .62} ${-L * .9}C${w * 1.08} ${-L * .68} ${w} ${-L * .25} 0 0Z`;
+const cupD = r => `M${-r} 0A${r} ${r} 0 0 1 ${r} 0A${r} ${r * .5} 0 0 0 ${-r} 0Z`;
+
+// g'unchalar (to'ldiruvchi)
+[[96, 150, -35], [314, 152, 35]].forEach(([x, y, a]) => {
+  const tx = 205;
+  const p = el('path', {d: `M${tx} ${PY}C${tx} 360 ${x} ${y + 90} ${x} ${y}`, stroke: '#3f7d43', 'stroke-width': 2.4, fill: 'none', 'stroke-linecap': 'round'}, gStems);
+  const len = p.getTotalLength();
+  p.style.strokeDasharray = len; p.style.strokeDashoffset = len; p._len = len;
+  stems.push(p);
+  const g = el('g', {transform: `translate(${x} ${y}) rotate(${a})`}, gFlowers);
+  const s = el('g', {class: 'leafS'}, g);
+  el('path', {d: 'M0 0C-10-4-10-19 0-28C10-19 10-4 0 0Z', fill: 'url(#r2)', stroke: 'rgba(255,150,165,.35)', 'stroke-width': .8}, s);
+  el('path', {d: 'M0-2C-3-9-2-18 3-24', stroke: 'rgba(255,140,160,.5)', 'stroke-width': 1, fill: 'none'}, s);
+  el('path', {d: 'M0 0C-7-2-11-8-12-15C-6-11-3-6 0 0Z', fill: '#3f7d43'}, s);
+  el('path', {d: 'M0 0C7-2 11-8 12-15C6-11 3-6 0 0Z', fill: '#3f7d43'}, s);
+  el('path', {d: 'M0 0C-2-5-1-11 1-16C2-10 2-5 0 0Z', fill: '#4f9a55'}, s);
+  leaves.push(s);
+});
+
+FL.forEach((f, i) => {
+  const g = el('g', {class: 'fl', transform: `translate(${f.x} ${f.y}) scale(${f.s})`}, gFlowers);
+  const bob = el('g', {}, g);
+  const pop = el('g', {class: 'pop'}, bob);
+  const rose = f.t === 'rose';
+  const R = rose ? 42 : 48;
+  el('circle', {r: R + 22, fill: 'url(#glowG)', class: 'glow'}, pop);
+  const bloom = el('g', {}, pop);
+  const shadow = el('g', {class: 'layer'}, bloom);
+  el('circle', {cx: 3, cy: 7, r: R + 4, fill: 'url(#shadowG)'}, shadow);
+  const L = rose
+    ? [{n: 5, len: 43, w: 35, fill: 'url(#r1)', off: 0}, {n: 5, len: 35, w: 29, fill: 'url(#r2)', off: 36}, {n: 4, len: 26, w: 22, fill: 'url(#r3)', off: 15}]
+    : [{n: 9, len: 48, w: 30, fill: 'url(#p1)', off: 0}, {n: 8, len: 39, w: 27, fill: 'url(#p2)', off: 20}, {n: 7, len: 30, w: 22, fill: 'url(#p3)', off: 8}, {n: 6, len: 21, w: 16, fill: 'url(#p4)', off: 30}];
+  f.layers = [shadow].concat(L.map(spec => {
+    const lg = el('g', {class: 'layer'}, bloom);
+    for (let k = 0; k < spec.n; k++) {
+      const j = 1 + (rnd() - .5) * .16;
+      el('path', {d: (rose ? petalD : ruffleD)(spec.len * j, spec.w * j), transform: `rotate(${spec.off + k * 360 / spec.n + (rnd() - .5) * 12})`,
+        fill: spec.fill, stroke: rose ? 'rgba(255,150,165,.4)' : 'rgba(170,60,95,.25)', 'stroke-width': rose ? 1 : .8}, lg);
+    }
+    return lg;
+  }));
+  const core = el('g', {class: 'layer'}, bloom);
+  if (rose) {
+    // spiral bo'lib o'ralgan markaz
+    for (let k = 0; k < 7; k++) {
+      const r = 17 - k * 2;
+      el('path', {d: cupD(r), transform: `rotate(${k * 128}) translate(0 ${k % 2 ? 1 : -1})`,
+        fill: k % 2 ? '#a3112a' : '#c91f38', stroke: 'rgba(255,140,160,.55)', 'stroke-width': .9}, core);
+    }
+    el('circle', {r: 2.6, fill: '#5a0612'}, core);
+  } else {
+    for (let k = 0; k < 5; k++) el('path', {d: ruffleD(12, 9), transform: `rotate(${k * 72 + 15})`, fill: '#fde8ee', stroke: 'rgba(200,90,120,.3)', 'stroke-width': .6}, core);
+    for (let k = 0; k < 9; k++) {
+      const a = k * 40 * Math.PI / 180, d = 3 + (k % 3) * 1.6;
+      el('circle', {cx: Math.cos(a) * d, cy: Math.sin(a) * d, r: 1.3, fill: '#f1c25e'}, core);
+    }
+  }
+  f.layers.push(core);
+  // g'uncha holati: tashqi gulbarglar yig'iq turadi
+  f.bud = rose ? [.78, .7, .82, .94, 1] : [.74, .66, .74, .86, .96, 1];
+  el('circle', {r: R * .72, fill: 'none', stroke: 'rgba(255,226,190,.8)', 'stroke-width': 1.6, class: 'ring'}, pop);
+  const sp = el('g', {class: 'spark'}, pop);
+  star(sp, R * .66, -R * .66, 7, 0);
+  star(sp, -R * .78, -R * .3, 5, -1);
+  star(sp, R * .2, R * .82, 4.5, -2);
+  f.g = g; f.bob = bob; f.pop = pop;
+  const hit = el('circle', {cx: f.x, cy: f.y, r: 42 * f.s, fill: 'transparent', class: 'hit', tabindex: 0, role: 'button',
+    'aria-label': (f.t === 'rose' ? 'Atirgul' : 'Piona') + ' — ochish'}, gHits);
+  hit.addEventListener('click', () => onFlower(i));
+  hit.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onFlower(i); } });
+  f.hit = hit;
+});
+
+// lenta
+const rib = el('g', {class: 'rib'}, gRibbon);
+el('rect', {x: -13, y: -9, width: 26, height: 18, rx: 4, fill: '#cf9f74'}, rib);
+el('path', {d: 'M0 0C-8 22-22 42-30 66L-17 61-14 74C-6 48 0 24 0 0Z', fill: 'url(#ribG)'}, rib);
+el('path', {d: 'M0 0C8 22 22 42 30 66L17 61 14 74C6 48 0 24 0 0Z', fill: 'url(#ribG)'}, rib);
+el('path', {d: 'M0 0C-36-28-60-12-48 8C-40 20-16 12 0 0Z', fill: 'url(#ribG)', stroke: 'rgba(150,100,60,.35)', 'stroke-width': .8}, rib);
+el('path', {d: 'M0 0C36-28 60-12 48 8C40 20 16 12 0 0Z', fill: 'url(#ribG)', stroke: 'rgba(150,100,60,.35)', 'stroke-width': .8}, rib);
+el('ellipse', {rx: 9, ry: 8, fill: '#e2b88f', stroke: 'rgba(150,100,60,.4)', 'stroke-width': .8}, rib);
+
+/* ---------- musiqa (brauzerda yaratiladi) ---------- */
+const Music = {
+  ctx: null, on: true, VOL: .85,
+  start() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      const c = this.ctx = new AC();
+      this.master = c.createGain(); this.master.gain.value = 0; this.master.connect(c.destination);
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3400; lp.connect(this.master);
+      const dry = c.createGain(); dry.gain.value = .85; dry.connect(lp);
+      const conv = c.createConvolver(); conv.buffer = this.impulse(c, 2.8);
+      const wet = c.createGain(); wet.gain.value = .45; conv.connect(wet); wet.connect(lp);
+      this.bus = c.createGain(); this.bus.connect(dry); this.bus.connect(conv);
+      this.master.gain.setTargetAtTime(this.VOL, c.currentTime, 1.5);
+      this.E = 60 / 66 / 2; this.step = 0; this.next = c.currentTime + .2;
+      this.timer = setInterval(() => this.tick(), 90);
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) c.suspend(); else c.resume();
+      });
+    } catch (e) {}
+  },
+  impulse(c, sec) {
+    const len = Math.floor(c.sampleRate * sec), b = c.createBuffer(2, len, c.sampleRate);
+    for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3); }
+    return b;
+  },
+  note(m, t, dur, vol) {
+    const c = this.ctx, f = 440 * Math.pow(2, (m - 69) / 12);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    g.connect(this.bus);
+    const o1 = c.createOscillator(); o1.type = 'sine'; o1.frequency.value = f; o1.connect(g);
+    const g2 = c.createGain(); g2.gain.value = .2; g2.connect(g);
+    const o2 = c.createOscillator(); o2.type = 'sine'; o2.frequency.value = f * 2; o2.connect(g2);
+    const g3 = c.createGain(); g3.gain.value = .05; g3.connect(g);
+    const o3 = c.createOscillator(); o3.type = 'triangle'; o3.frequency.value = f * 3.01; o3.connect(g3);
+    [o1, o2, o3].forEach(o => { o.start(t); o.stop(t + dur + .05); });
+  },
+  CH: [{b: 41, t: [53, 57, 60, 64]}, {b: 43, t: [55, 59, 62, 67]}, {b: 40, t: [52, 55, 59, 64]}, {b: 45, t: [57, 60, 64, 67]}],
+  PAT: [0, 2, 1, 3, 2, 1, 3, 2],
+  MEL: [[[0, 81], [3, 79], [4, 77], [6, 76]], [[0, 74], [2, 79], [4, 77], [6, 74]], [[0, 76], [3, 79], [4, 83], [6, 79]], [[0, 81], [4, 76], [6, 79]]],
+  tick() {
+    const c = this.ctx;
+    while (this.next < c.currentTime + .5) {
+      const s = this.step, t = this.next, bar = Math.floor(s / 8) % 4, pos = s % 8, loop = Math.floor(s / 32);
+      const ch = this.CH[bar];
+      if (pos === 0) this.note(ch.b, t, 3.6, .11);
+      this.note(ch.t[this.PAT[pos]] + 12, t, 1.7, pos === 0 ? .07 : .05);
+      if (loop >= 1 && loop % 3 !== 0) this.MEL[bar].forEach(([p, m]) => { if (p === pos) this.note(m, t, 2.4, .085); });
+      this.next += this.E; this.step++;
+    }
+  },
+  toggle() {
+    if (!this.ctx) return;
+    this.on = !this.on;
+    this.master.gain.setTargetAtTime(this.on ? this.VOL : 0, this.ctx.currentTime, .3);
+    return this.on;
+  }
+};
+
+/* ---------- telefon qiyaligi (Android) ---------- */
+let tiltT = 0, tiltC = 0;
+function setupTilt() {
+  try {
+    if (!('DeviceOrientationEvent' in window) || typeof DeviceOrientationEvent.requestPermission === 'function') return;
+    addEventListener('deviceorientation', e => {
+      if (e.gamma == null) return;
+      tiltT = Math.max(-11, Math.min(11, -e.gamma * .35));
+    });
+  } catch (e) {}
+}
+
+/* ---------- animatsiya sikli ---------- */
+let showBouquet = false;
+function frame(now) {
+  const t = now / 1000;
+  cx.clearRect(0, 0, W, H);
+  for (const m of motes) {
+    m.y -= m.vy * 16; if (m.y < -.02) { m.y = 1.02; m.x = Math.random(); }
+    const a = .25 + .35 * Math.sin(t * m.sp + m.ph);
+    const x = m.x * W + Math.sin(t * .3 + m.ph) * 8, y = m.y * H;
+    cx.fillStyle = `rgba(255,214,170,${a * .25})`; cx.beginPath(); cx.arc(x, y, m.r * 3.2, 0, 6.283); cx.fill();
+    cx.fillStyle = `rgba(255,232,205,${a})`; cx.beginPath(); cx.arc(x, y, m.r, 0, 6.283); cx.fill();
+  }
+  if (petalRate && Math.random() < petalRate * .06) addPetal();
+  for (let i = petals.length - 1; i >= 0; i--) {
+    const p = petals[i];
+    p.ph += .04; p.rot += p.vr;
+    if (p.life === 1) { p.vx *= .97; p.vy = p.vy * .97 + .06; } else { p.vx += Math.sin(p.ph) * .015; }
+    p.x += p.vx; p.y += p.vy;
+    if (p.y > H + 30) { petals.splice(i, 1); continue; }
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot); cx.scale(1, .55 + .45 * Math.sin(p.ph));
+    const s = p.s; cx.fillStyle = p.c; cx.globalAlpha = .9;
+    cx.beginPath(); cx.moveTo(0, -s);
+    cx.bezierCurveTo(s * .9, -s * .6, s * .7, s * .7, 0, s);
+    cx.bezierCurveTo(-s * .7, s * .7, -s * .9, -s * .6, 0, -s); cx.fill();
+    cx.restore();
+  }
+  if (showBouquet) {
+    tiltC += (tiltT - tiltC) * .06;
+    const amp = reduce ? 0 : 1;
+    const sway = (Math.sin(t * .9) * 2 + Math.sin(t * .37) * .8) * amp;
+    tiltG.setAttribute('transform', `rotate(${(sway + tiltC).toFixed(2)})`);
+    FL.forEach((f, i) => f.bob.setAttribute('transform', `translate(0 ${(Math.sin(t * 1.3 + i) * 2 * amp).toFixed(2)}) rotate(${(Math.sin(t * .8 + i * 1.7) * 3 * amp).toFixed(2)})`));
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ---------- sahnalar ---------- */
+function show(id) { document.querySelectorAll('.scene').forEach(s => s.classList.toggle('on', s.id === id)); }
+const hint = $('#hint');
+function setHint(main, small) { hint.innerHTML = ''; hint.append(main); if (small != null) { const sm = document.createElement('small'); sm.textContent = small; hint.append(sm); } }
+
+let skip = false;
+async function typeText(el, text) {
+  el.textContent = '';
+  const span = document.createElement('span'), caret = document.createElement('span');
+  caret.className = 'caret'; el.append(span, caret);
+  const chars = Array.from(text);
+  for (let i = 0; i < chars.length; i++) {
+    if (skip) { span.textContent = text; break; }
+    span.textContent = chars.slice(0, i + 1).join('');
+    const ch = chars[i];
+    await sleep(reduce ? 10 : ch === ',' || ch === ':' ? 280 : ch === '.' ? 340 : 52);
+  }
+  skip = false;
+  return caret;
+}
+async function intro() {
+  const typed = $('#typed');
+  for (const line of INTRO) {
+    typed.classList.remove('fade');
+    const caret = await typeText(typed, line);
+    await sleep(1700);
+    caret.remove();
+    typed.classList.add('fade');
+    await sleep(650);
+  }
+}
+$('#intro').addEventListener('click', () => { skip = true; });
+
+const ease = 'cubic-bezier(.22,1.2,.36,1)';
+async function grow() {
+  showBouquet = true;
+  stems.forEach((p, i) => p.animate([{strokeDashoffset: p._len}, {strokeDashoffset: 0}], {duration: 1900, delay: i * 130, easing: 'cubic-bezier(.45,.05,.3,1)', fill: 'forwards'}));
+  await sleep(1500);
+  leaves.forEach((l, i) => l.animate([{transform: 'scale(0) rotate(-25deg)'}, {transform: 'scale(1) rotate(0deg)'}], {duration: 900, delay: i * 80, easing: 'cubic-bezier(.34,1.4,.64,1)', fill: 'forwards'}));
+  await sleep(700);
+  const order = [1, 4, 0, 2, 3, 5];
+  order.forEach((fi, k) => FL[fi].layers.forEach((L, j) => { L._a = L.animate(
+    [{transform: 'scale(.1) rotate(-70deg)', opacity: 0}, {transform: `scale(${FL[fi].bud[j]}) rotate(-14deg)`, opacity: 1}],
+    {duration: 1400, delay: k * 420 + j * 150, easing: ease, fill: 'forwards'}); }));
+  breath.forEach((b, i) => b.animate([{opacity: 0}, {opacity: 1}], {duration: 800, delay: 900 + i * 45, fill: 'forwards'}));
+  await sleep(order.length * 420 + 1300);
+  rib.animate([{transform: 'scale(.2)', opacity: 0}, {transform: 'scale(1)', opacity: 1}], {duration: 900, easing: 'cubic-bezier(.34,1.56,.64,1)', fill: 'forwards'});
+  await sleep(900);
+  svg.classList.add('interactive');
+  interactive = true;
+  setHint('Gullarga teging, ular ochiladi 👆', '0 / 6');
+}
+
+/* ---------- gullarni ochish ---------- */
+let interactive = false, cardOpen = false, opened = 0, nextMsg = 0, finaleDone = false;
+const assigned = [];
+const cardWrap = $('#cardWrap');
+function buzz() { try { navigator.vibrate && navigator.vibrate(14); } catch (e) {} }
+function onFlower(i) {
+  if (!interactive || cardOpen) return;
+  const f = FL[i];
+  buzz();
+  const first = assigned[i] == null;
+  if (first) {
+    // g'unchadan to'liq ochilgan gulga
+    f.layers.forEach((L, j) => {
+      const a = L.animate([{transform: `scale(${f.bud[j]}) rotate(-14deg)`, opacity: 1}, {transform: 'scale(1) rotate(0deg)', opacity: 1}],
+        {duration: 1300, delay: j * 70, easing: 'cubic-bezier(.22,1.3,.36,1)', fill: 'both'});
+      if (L._a) L._a.cancel(); L._a = a;
+    });
+    if (f.popA) f.popA.cancel();
+    f.popA = f.pop.animate([{transform: 'scale(1)'}, {transform: 'scale(1.2)'}, {transform: 'scale(1.07)'}], {duration: 900, easing: 'ease-out', fill: 'forwards'});
+  } else {
+    f.pop.animate([{transform: 'scale(1.07)'}, {transform: 'scale(1.16)'}, {transform: 'scale(1.07)'}], {duration: 600, easing: 'ease-out', composite: 'replace'});
+  }
+  const r = f.hit.getBoundingClientRect();
+  for (let k = 0; k < 12; k++) addPetal(r.left + r.width / 2, r.top + r.height / 2, true);
+  if (first) { assigned[i] = nextMsg++; f.g.classList.add('opened'); opened++; }
+  $('#cardTag').textContent = `${f.t === 'rose' ? 'Atirgul' : 'Piona'} · ${assigned[i] + 1} / 6`;
+  $('#cardText').textContent = MSGS[assigned[i]];
+  $('#cardBtn').textContent = opened === 6 && !finaleDone ? 'Yana bir narsa bor...' : 'Davom etish';
+  cardOpen = true; cardWrap.classList.add('on');
+  setTimeout(() => $('#cardBtn').focus({preventScroll: true}), 350);
+  if (!finaleDone) setHint(opened < 6 ? 'Gullarga teging, ular ochiladi 👆' : 'Hamma gullar ochildi 🌹', `${opened} / 6`);
+}
+function closeCard() {
+  if (!cardOpen) return;
+  cardOpen = false; cardWrap.classList.remove('on');
+  if (opened === 6 && !finaleDone) finale();
+}
+$('#cardBtn').addEventListener('click', e => { e.stopPropagation(); closeCard(); });
+cardWrap.addEventListener('click', e => { if (e.target === cardWrap) closeCard(); });
+
+/* ---------- yakun: xat ---------- */
+const envBox = $('#envBox'), env = $('#env'), letter = $('#letter'), reopen = $('#reopen');
+async function finale() {
+  finaleDone = true; interactive = false;
+  svg.classList.remove('interactive'); svg.classList.add('allOpen');
+  petalRate = 1;
+  for (let k = 0; k < 30; k++) addPetal(Math.random() * W, -Math.random() * H * .4);
+  await sleep(1600);
+  $('#stage').classList.add('finale');
+  await sleep(1000);
+  envBox.classList.add('on');
+}
+let letterShown = false;
+async function openLetter() {
+  if (env.classList.contains('open')) return;
+  buzz();
+  env.classList.add('open');
+  await sleep(1500);
+  letter.classList.add('on');
+  letter.scrollTop = 0;
+  if (!letterShown) {
+    letterShown = true;
+    const ps = letter.querySelectorAll('p');
+    for (const p of ps) { await sleep(reduce ? 50 : 750); p.classList.add('show'); }
+  }
+}
+env.addEventListener('click', openLetter);
+env.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLetter(); } });
+$('#backBtn').addEventListener('click', () => {
+  letter.classList.remove('on');
+  envBox.classList.remove('on');
+  env.classList.remove('open');
+  $('#stage').classList.remove('finale');
+  petalRate = .5;
+  interactive = true;
+  setHint('Gullarga yana teginishingiz mumkin 🌸', '6 / 6');
+  reopen.hidden = false;
+});
+reopen.addEventListener('click', () => {
+  letter.classList.add('on');
+  letter.querySelectorAll('p').forEach(p => p.classList.add('show'));
+  letter.scrollTop = 0;
+});
+
+/* ---------- musiqa tugmasi ---------- */
+const mute = $('#mute');
+mute.addEventListener('click', e => {
+  e.stopPropagation();
+  const on = Music.toggle();
+  $('#muteSlash').setAttribute('opacity', on ? 0 : 1);
+  mute.setAttribute('aria-label', on ? 'Musiqani o‘chirish' : 'Musiqani yoqish');
+});
+
+/* ---------- boshlash ---------- */
+let started = false;
+async function start() {
+  if (started) return;
+  started = true;
+  Music.start();
+  if (Music.ctx) mute.hidden = false;
+  try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {}); } catch (e) {}
+  setupTilt();
+  show('intro');
+  await sleep(900);
+  await intro();
+  show('stage');
+  await sleep(500);
+  grow();
+}
+$('#start').addEventListener('click', start);
+})();
+</script>
+</body>
+</html>
