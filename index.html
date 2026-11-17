@@ -203,6 +203,17 @@ body{margin:0;background:var(--night);color:var(--cream);font-family:var(--displ
 <script>
 (() => {
 'use strict';
+/* ---------- tashriflar statistikasi (GoatCounter) ---------- */
+const GC = 'muhlisagullar'; // GoatCounter kodi
+if (GC) {
+  const sc = document.createElement('script');
+  sc.async = true; sc.src = 'https://gc.zgo.at/count.js';
+  sc.dataset.goatcounter = `https://${GC}.goatcounter.com/count`;
+  document.head.appendChild(sc);
+}
+function track(name) {
+  try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({path: name, title: name, event: true}); } catch (e) {}
+}
 const $ = s => document.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -631,7 +642,7 @@ function onFlower(i) {
   }
   const r = f.hit.getBoundingClientRect();
   for (let k = 0; k < 12; k++) addPetal(r.left + r.width / 2, r.top + r.height / 2, true);
-  if (first) { assigned[i] = nextMsg++; f.g.classList.add('opened'); opened++; }
+  if (first) { assigned[i] = nextMsg++; f.g.classList.add('opened'); opened++; track('gul-ochildi-' + opened); }
   $('#cardTag').textContent = `${f.t === 'rose' ? 'Atirgul' : 'Piona'} · ${assigned[i] + 1} / 6`;
   $('#cardText').textContent = MSGS[assigned[i]];
   $('#cardBtn').textContent = opened === 6 && !finaleDone ? 'Yana bir narsa bor...' : 'Davom etish';
@@ -664,6 +675,7 @@ async function openLetter() {
   if (env.classList.contains('open')) return;
   buzz();
   env.classList.add('open');
+  track('xat-ochildi');
   await sleep(1500);
   letter.classList.add('on');
   letter.scrollTop = 0;
@@ -705,6 +717,7 @@ let started = false;
 async function start() {
   if (started) return;
   started = true;
+  track('boshladi');
   Music.start();
   if (Music.ctx) mute.hidden = false;
   try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {}); } catch (e) {}
